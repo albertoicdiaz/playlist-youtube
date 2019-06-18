@@ -11,6 +11,7 @@
 
 // https://i.ytimg.com/vi/qxWrnhZEuRU/mqdefault.jpg
 
+// --------------------------------------------------------------------------------------------------------------------------
 
 $(document).ready(function () {
 
@@ -79,23 +80,35 @@ $(document).ready(function () {
 function getvideoid(){
     var song=document.getElementById("song").value;
     alert(song);
-    var search = "https://www.youtube.com/embed?listType=search&list="+song;
+    var key ='AIzaSyDr6Uh5QzHGCGag905Vcc6kQ38B9nD5AhQ';
+    var search = "https://www.googleapis.com/youtube/v3/search?part=snippet&key="+key + "&q="+song;
     alert(search);
-    onYouTubeIframeAPIReady(song);
+    data = JSON.parse(httpGet(search));
+    if (data.items){
+        var thumb=(data['items'][0]['snippet']['thumbnails']['medium']['url']);
+        var title = (data['items'][0]['snippet']['title']);
+        var desc = (data['items'][0]['snippet']['description']);
+        var vid=(data['items'][0]['id']['videoId']);
+    }
+    // embedurl="https://www.youtube.com/watch?v="+vid;
+    // alert (embedurl);
+    $("main").append(`
+							<article class="item" data-key="${vid}">
+
+								<img src="${thumb}" alt="" class="thumb">
+								<div class="details">
+									<h4>${title}</h4>
+									<p>${desc}</p>
+								</div>
+
+							</article>
+						`);
 }
 
-
-var tag = document.createElement('script');
-
-tag.src = "https://www.youtube.com/iframe_api";
-var firstScriptTag = document.getElementsByTagName('script')[0];
-firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-// 3. This function creates an <iframe> (and YouTube player)
-//    after the API code downloads.
-var player;
-function onYouTubeIframeAPIReady(song) {
-  player = new YT.Player('player');
-  alert(player.getVideoUrl()="https://www.youtube.com/embed?listType=search&list="+song);
-  
-}
+function httpGet(theUrl)
+{
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", theUrl, false ); 
+    xmlHttp.send( null );
+    return xmlHttp.responseText;
+};
